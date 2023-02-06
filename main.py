@@ -84,7 +84,7 @@ def main(args):
 
     file_list = get_walks(fullpath)
     if len(file_list) > 0:
-        bar = IncrementalBar('Countdown', max=len(file_list))
+        bar = IncrementalBar('Files read', max=len(file_list))
         # bar = Bar('Countdown', max=len(file_list))
         out_list = list()
         sharp_file_list = list()
