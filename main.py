@@ -11,8 +11,9 @@ import os
 # import mimetypes
 from PIL import Image
 from pyzbar import pyzbar
+# from progress.bar import Bar
 from progress.bar import IncrementalBar
-#from progress.bar import Bar
+
 
 image_ext_list = list(
     [".BMP", ".DDS", ".DIB", ".EPS", ".GIF", ".ICNS", ".ICO", ".IM", ".JPEG", ".JPG", ".MSP", ".PCX", ".PNG",
@@ -84,10 +85,10 @@ def main(args):
     file_list = get_walks(fullpath)
     if len(file_list) > 0:
         bar = IncrementalBar('Countdown', max=len(file_list))
-#        bar = Bar('Countdown', max=len(file_list))
+        # bar = Bar('Countdown', max=len(file_list))
         out_list = list()
+        sharp_file_list = list()
         for image_file in file_list:
-            bar.next()
             dirname, filename = os.path.split(image_file)
             relpath = dirname.replace(fullpath, "")
             barcodes = get_barcode(image_file)
@@ -102,12 +103,13 @@ def main(args):
             else:
                 # print("File {} barcode Not Found".format(image_file))
                 out_list.append("{}\t{}\t{}\t{}\n".format(filename, relpath.replace("/\\", ""), i, ""))
+            bar.next()
         bar.finish()
         try:
-            with open('foundcodes.csv', 'w', encoding='utf-8') as outfile:
+            with open(os.path.join(fullpath, 'foundcodes.csv'), 'w', encoding='utf-8') as outfile:
                 outfile.writelines(out_list)
         except OSError as os_error:
-            print("Error operate with file as: {} because: {}".format('foundcodes.csv', os_error))
+            print("Error operate with file as: {} because: {}".format(os.path.join(fullpath, 'foundcodes.csv'), os_error))
     else:
         print("No files found for path as: {}".format(fullpath))
 
