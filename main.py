@@ -4,8 +4,7 @@
 #  main.py
 #
 #  Copyright 2022 mc <mc@PyBuntu>
-
-
+import contextlib
 import sys
 import os
 # import mimetypes
@@ -13,7 +12,6 @@ from PIL import Image, ImageFilter
 from pyzbar import pyzbar
 # from progress.bar import Bar
 from progress.bar import IncrementalBar
-
 
 image_ext_list = list(
     [".BMP", ".DDS", ".DIB", ".EPS", ".GIF", ".ICNS", ".ICO", ".IM", ".JPEG", ".JPG", ".MSP", ".PCX", ".PNG",
@@ -26,17 +24,22 @@ def get_barcode(fullname):
         filename = os.path.basename(fullname)
         name, ext = os.path.splitext(filename)
         try:
-            with Image.open(fullname) as im:
-                barcodes = pyzbar.decode(im)
-                # if not (len(barcodes) > 0):
-                #     sharp_im = im.filter(ImageFilter.SHARPEN)
-                #     barcodes = pyzbar.decode(sharp_im)
+            with open("error.log", "w") as error_file:
+                with contextlib.redirect_stderr(error_file):
+                    with Image.open(fullname) as im:
+                        barcodes = pyzbar.decode(im)
+                        if not (len(barcodes) > 0):
+                            sharp_im = im.filter(ImageFilter.SHARPEN)
+                            barcodes = pyzbar.decode(sharp_im)
         except OSError as os_error:
             print("Error open image as: {} because: {}".format(fullname, os_error))
             return barcodes
         except ValueError as val_error:
             print("Format could not be determined from the file as: {} because: {}".format(fullname, val_error))
             return barcodes
+        # except:
+        #     print("Another error or warning: {}".format(fullname))
+        #     return barcodes
     else:
         print("No {} exist or it is no file".format(fullname))
         return barcodes
@@ -114,7 +117,8 @@ def main(args):
             with open(os.path.join(fullpath, 'foundcodes.csv'), 'w', encoding='utf-8') as outfile:
                 outfile.writelines(out_list)
         except OSError as os_error:
-            print("Error operate with file as: {} because: {}".format(os.path.join(fullpath, 'foundcodes.csv'), os_error))
+            print(
+                "Error operate with file as: {} because: {}".format(os.path.join(fullpath, 'foundcodes.csv'), os_error))
     else:
         print("No files found for path as: {}".format(fullpath))
 
@@ -122,10 +126,5 @@ def main(args):
 
 
 if __name__ == '__main__':
+
     sys.exit(main(sys.argv))
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
