@@ -24,8 +24,6 @@ def get_barcode(fullname):
         filename = os.path.basename(fullname)
         name, ext = os.path.splitext(filename)
         try:
-            # with open("error.log", "w") as error_file:
-            #     with contextlib.redirect_stderr(error_file):
             with Image.open(fullname) as im:
                 barcodes = pyzbar.decode(im)
                 if not (len(barcodes) > 0):
@@ -110,6 +108,8 @@ def main(args):
                 # print("File {} barcode Not Found".format(image_file))
                 out_list.append("{}\t{}\t{}\t{}\n".format(filename, relpath.replace("/\\", ""), i, ""))
                 unresolved += 1
+            # with open("error.log", "a") as error_file:
+            # with contextlib.redirect_stderr(stderr_default):
             bar.next()
         bar.finish()
         print("There are {} unresolved files".format(unresolved))
@@ -126,4 +126,5 @@ def main(args):
 
 
 if __name__ == '__main__':
+    # stderr_default = sys.stderr
     sys.exit(main(sys.argv))
