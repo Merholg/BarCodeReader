@@ -9,7 +9,7 @@
 import sys
 import os
 # import mimetypes
-from PIL import Image
+from PIL import Image, ImageFilter
 from pyzbar import pyzbar
 # from progress.bar import Bar
 from progress.bar import IncrementalBar
@@ -28,6 +28,9 @@ def get_barcode(fullname):
         try:
             with Image.open(fullname) as im:
                 barcodes = pyzbar.decode(im)
+                if not (len(barcodes) > 0):
+                    sharp_im = im.filter(ImageFilter.SHARPEN)
+                    barcodes = pyzbar.decode(im)
         except OSError as os_error:
             print("Error open image as: {} because: {}".format(fullname, os_error))
             return barcodes
@@ -87,7 +90,6 @@ def main(args):
         bar = IncrementalBar('Files read', max=len(file_list))
         # bar = Bar('Countdown', max=len(file_list))
         out_list = list()
-        sharp_file_list = list()
         for image_file in file_list:
             dirname, filename = os.path.split(image_file)
             relpath = dirname.replace(fullpath, "")
