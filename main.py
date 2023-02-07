@@ -30,7 +30,7 @@ def get_barcode(fullname):
                 barcodes = pyzbar.decode(im)
                 if not (len(barcodes) > 0):
                     sharp_im = im.filter(ImageFilter.SHARPEN)
-                    barcodes = pyzbar.decode(im)
+                    barcodes = pyzbar.decode(sharp_im)
         except OSError as os_error:
             print("Error open image as: {} because: {}".format(fullname, os_error))
             return barcodes
@@ -90,6 +90,7 @@ def main(args):
         bar = IncrementalBar('Files read', max=len(file_list))
         # bar = Bar('Countdown', max=len(file_list))
         out_list = list()
+        unresolved = 0
         for image_file in file_list:
             dirname, filename = os.path.split(image_file)
             relpath = dirname.replace(fullpath, "")
@@ -105,8 +106,10 @@ def main(args):
             else:
                 # print("File {} barcode Not Found".format(image_file))
                 out_list.append("{}\t{}\t{}\t{}\n".format(filename, relpath.replace("/\\", ""), i, ""))
+                unresolved += 1
             bar.next()
         bar.finish()
+        print("There are {} unresolved files".format(unresolved))
         try:
             with open(os.path.join(fullpath, 'foundcodes.csv'), 'w', encoding='utf-8') as outfile:
                 outfile.writelines(out_list)
