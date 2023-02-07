@@ -28,9 +28,9 @@ def get_barcode(fullname):
         try:
             with Image.open(fullname) as im:
                 barcodes = pyzbar.decode(im)
-                if not (len(barcodes) > 0):
-                    sharp_im = im.filter(ImageFilter.SHARPEN)
-                    barcodes = pyzbar.decode(sharp_im)
+                # if not (len(barcodes) > 0):
+                #     sharp_im = im.filter(ImageFilter.SHARPEN)
+                #     barcodes = pyzbar.decode(sharp_im)
         except OSError as os_error:
             print("Error open image as: {} because: {}".format(fullname, os_error))
             return barcodes
