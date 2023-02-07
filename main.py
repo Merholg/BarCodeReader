@@ -4,7 +4,7 @@
 #  main.py
 #
 #  Copyright 2022 mc <mc@PyBuntu>
-import contextlib
+# import contextlib
 import sys
 import os
 # import mimetypes
@@ -24,13 +24,13 @@ def get_barcode(fullname):
         filename = os.path.basename(fullname)
         name, ext = os.path.splitext(filename)
         try:
-            with open("error.log", "w") as error_file:
-                with contextlib.redirect_stderr(error_file):
-                    with Image.open(fullname) as im:
-                        barcodes = pyzbar.decode(im)
-                        if not (len(barcodes) > 0):
-                            sharp_im = im.filter(ImageFilter.SHARPEN)
-                            barcodes = pyzbar.decode(sharp_im)
+            # with open("error.log", "w") as error_file:
+            #     with contextlib.redirect_stderr(error_file):
+            with Image.open(fullname) as im:
+                barcodes = pyzbar.decode(im)
+                if not (len(barcodes) > 0):
+                    sharp_im = im.filter(ImageFilter.SHARPEN)
+                    barcodes = pyzbar.decode(sharp_im)
         except OSError as os_error:
             print("Error open image as: {} because: {}".format(fullname, os_error))
             return barcodes
@@ -126,5 +126,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-
     sys.exit(main(sys.argv))
