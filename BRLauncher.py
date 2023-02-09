@@ -7,6 +7,7 @@
 # import contextlib
 import sys
 import os
+import subprocess
 # import mimetypes
 from PIL import Image, ImageFilter
 from pyzbar import pyzbar
@@ -85,6 +86,16 @@ def main(args):
         fullpath = os.path.expanduser(path)
     else:
         fullpath = os.path.realpath(path)
+
+    # ------------------------------------------------
+    ImPs = subprocess.Popen(args, bufsize=-1, executable=None, \
+                     stdin=None, stdout=None, stderr=None, \
+                     preexec_fn=None, close_fds=True, shell=False, \
+                     cwd=None, env=None, universal_newlines=None, \
+                     startupinfo=None, creationflags=0, restore_signals=True, \
+                     start_new_session=False, pass_fds=(), *, \
+                     encoding=None, errors=None, text=None)
+    # ------------------------------------------------
 
     file_list = get_walks(fullpath)
     if len(file_list) > 0:
