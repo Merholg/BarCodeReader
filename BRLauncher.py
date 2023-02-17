@@ -67,8 +67,6 @@ def main(args):
         out_list = list()
         unresolved = 0
         for image_file in file_list:
-            dirname, filename = os.path.split(image_file)
-            relpath = dirname.replace(fullpath, "")
             barcodes = get_barcode(image_file)
             i = 0
             if len(barcodes) > 0:

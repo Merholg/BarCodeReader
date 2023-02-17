@@ -2,13 +2,13 @@
 #
 import subprocess
 
-# def print_hi(name):
-#     # Use a breakpoint in the code line below to debug your script.
-#     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def print_hi(name):
+    # Use a breakpoint in the code line below to debug your script.
+    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 
 if __name__ == '__main__':
-    # print_hi('PyCharm')
+    print_hi(__name__)
     with subprocess.Popen('python3 inouttest.py', executable='/bin/bash', shell=True, stdin=subprocess.PIPE,
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE) as inouttest:
