@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#  main.py
+#  mainBRL.py
 #
 #  Copyright 2022 mc <mc@PyBuntu>
 # import contextlib
@@ -12,6 +12,7 @@ from PIL import Image, ImageFilter
 from pyzbar import pyzbar
 # from progress.bar import Bar
 from progress.bar import IncrementalBar
+import subprocess
 
 image_ext_list = list(
     [".BMP", ".DDS", ".DIB", ".EPS", ".GIF", ".ICNS", ".ICO", ".IM", ".JPEG", ".JPG", ".MSP", ".PCX", ".PNG",
@@ -91,28 +92,33 @@ def main(args):
         bar = IncrementalBar('Files read', max=len(file_list))
         # bar = Bar('Countdown', max=len(file_list))
         out_list = list()
-        unresolved = 0
-        for image_file in file_list:
-            dirname, filename = os.path.split(image_file)
-            relpath = dirname.replace(fullpath, "")
-            barcodes = get_barcode(image_file)
-            i = 0
-            if len(barcodes) > 0:
-                # print("File {} barcode Found".format(image_file))
-                for barcode in barcodes:
-                    # print("barcode as: {}".format(barcode.data))
-                    i += 1
-                    out_list.append("{}\t{}\t{}\t{}\n".format(filename, relpath.replace("/\\", ""), i,
-                                                              barcode.data.decode("utf-8")))
-            else:
-                # print("File {} barcode Not Found".format(image_file))
-                out_list.append("{}\t{}\t{}\t{}\n".format(filename, relpath.replace("/\\", ""), i, ""))
-                unresolved += 1
-            # with open("error.log", "a") as error_file:
-            # with contextlib.redirect_stderr(stderr_default):
+        barcodes = list()
+        with subprocess.Popen('python3 BRResolver.py', executable='/bin/bash', shell=True, stdin=subprocess.PIPE,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE) as BRResolver:
+            with open('error.log', 'a') as log_file:
+
+                for image_file in file_list:
+                    dirname, filename = os.path.split(image_file)
+                    relpath = dirname.replace(fullpath, "")
+                    barcodes.clear()
+                    stdout, stderr = BRResolver.communicate(input=image_file.encode())
+                    barcodes = stdout.split("\n")
+                    # print("STDOUT is: {}".format(stdout.decode()))
+                    # print("STDERR is: {}".format(stderr.decode()))
+                    log_file.write(stderr.decode())
+                    i = 0
+                    if len(barcodes) > 0:
+                        for barcode in barcodes:
+                            i += 1
+                            out_list.append("{}\t{}\t{}\t{}\n".format(filename, relpath.replace("/\\", ""), i, barcode))
+                    else:
+                        # print("File {} barcode Not Found".format(image_file))
+                        out_list.append("{}\t{}\t{}\t{}\n".format(filename, relpath.replace("/\\", ""), i, ""))
+                        # with open("error.log", "a") as error_file:
+                        # with contextlib.redirect_stderr(stderr_default):
             bar.next()
         bar.finish()
-        print("There are {} unresolved files".format(unresolved))
         try:
             with open(os.path.join(fullpath, 'foundcodes.csv'), 'w', encoding='utf-8') as outfile:
                 outfile.writelines(out_list)
