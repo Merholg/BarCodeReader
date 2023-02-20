@@ -11,9 +11,17 @@ from pyzbar import pyzbar
 
 
 def get_barcode(filefullname):
+    """
+    Return barcode resolved form image file. if the file name is in the command line parameters, this file is
+    recognized and the program ends. If there are no command line parameters - an endless loop asking for keyboard
+    input.
+    :param filefullname: full name of image file
+    :return: numerical values of barcodes found in the drawing
+    file line by line
+    """
     barcodes = list()
     flag = False
-    if filefullname:
+    if filefullname:  # string not empty
         flag = True
     while True:
         barcodes.clear()
@@ -35,13 +43,13 @@ def get_barcode(filefullname):
                 for barcode in barcodes:
                     # print("barcode as: {}".format(barcode.data))
                     i += 1
-                    print("{}\t{}\t{}\n".format(fullname, i, barcode.data.decode("utf-8")))
+                    print("{}\n".format(barcode.data.decode("utf-8")))
             else:
                 # print("File {} barcode Not Found".format(image_file))
-                print("{}\t{}\t{}\n".format(fullname, i, ""))
+                print("\n")
         else:
             # print("No {} exist or it is no file".format(fullname))
-            print("{}\t{}\t{}\n".format("", 0, ""))
+            print("\n")
         if flag:
             break
     return
